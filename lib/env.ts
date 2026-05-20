@@ -19,7 +19,7 @@ export const env = {
   supabaseServiceRoleKey: () =>
     pick(['SUPABASE_SECRET_KEY', 'SUPABASE_SERVICE_ROLE_KEY']),
 
-  openaiApiKey: () => pick(['OPENAI_API_KEY']),
+  geminiApiKey: () => pick(['GEMINI_API_KEY', 'GOOGLE_AI_API_KEY']),
   googlePlacesApiKey: () => pick(['GOOGLE_PLACES_API_KEY']),
   useSampleData: () => process.env.USE_SAMPLE_DATA === 'true',
 };

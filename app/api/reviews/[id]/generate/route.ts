@@ -1,6 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { getServerSupabase } from '@/lib/supabase/server';
-import { generateReplies } from '@/lib/openai';
+import { generateReplies } from '@/lib/ai';
 
 export const dynamic = 'force-dynamic';
 
@@ -38,7 +38,7 @@ export async function POST(
       comment: review.comment,
     });
   } catch (e) {
-    const msg = e instanceof Error ? e.message : 'OpenAI request failed';
+    const msg = e instanceof Error ? e.message : 'AI request failed';
     return Response.json({ error: msg }, { status: 502 });
   }
 
