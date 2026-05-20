@@ -25,7 +25,7 @@ export default async function DashboardPage() {
             UCOrm Dashboard
           </h1>
           <p className="mt-1 text-sm text-zinc-500">
-            Nhập Google Place ID để fetch review · AI sẽ giúp bạn trả lời (Day 4)
+            Nhập Google Place ID để fetch review · AI sinh 3 reply · Duyệt 1 trong 3
           </p>
         </header>
 
