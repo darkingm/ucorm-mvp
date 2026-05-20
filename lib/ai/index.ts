@@ -45,6 +45,9 @@ export async function generateReplies(input: {
         },
         required: ['standard', 'friendly', 'apologetic'],
       },
+      // Gemini 2.5 Flash mặc định bật "thinking" → thêm 2–5s độ trễ.
+      // Task này (template 3 reply ngắn) không cần reasoning sâu, tắt để giảm latency.
+      thinkingConfig: { thinkingBudget: 0 },
     },
   };
 
