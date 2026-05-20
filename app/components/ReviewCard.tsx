@@ -80,17 +80,7 @@ export function ReviewCard({ review }: { review: ReviewWithPlace }) {
         </footer>
       ) : null}
 
-      {review.status === 'resolved' && review.approved_reply ? (
-        <div className="mt-3 rounded-md border border-emerald-100 bg-emerald-50/50 p-3">
-          <p className="text-xs font-medium uppercase tracking-wide text-emerald-700">
-            Reply đã duyệt{' '}
-            {review.approved_tone ? `(${review.approved_tone})` : ''}
-          </p>
-          <p className="mt-1 text-sm text-emerald-900">{review.approved_reply}</p>
-        </div>
-      ) : (
-        <ReplyPicker review={review} />
-      )}
+      <ReplyPicker review={review} />
     </article>
   );
 }
