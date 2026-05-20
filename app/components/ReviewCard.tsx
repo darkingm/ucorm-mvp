@@ -1,4 +1,5 @@
 import type { ReviewWithPlace } from '@/lib/types';
+import { ReplyPicker } from './ReplyPicker';
 
 function Stars({ rating }: { rating: number | null }) {
   if (rating === null) return null;
@@ -72,7 +73,9 @@ export function ReviewCard({ review }: { review: ReviewWithPlace }) {
           </p>
           <p className="mt-1 text-sm text-emerald-900">{review.approved_reply}</p>
         </div>
-      ) : null}
+      ) : (
+        <ReplyPicker review={review} />
+      )}
     </article>
   );
 }
