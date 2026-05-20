@@ -2,6 +2,7 @@ import { getServerSupabase } from '@/lib/supabase/server';
 import type { ReviewWithPlace } from '@/lib/types';
 import { PlaceIdForm } from './components/PlaceIdForm';
 import { ReviewCard } from './components/ReviewCard';
+import { SampleFetchPanel } from './components/SampleFetchPanel';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,21 +20,36 @@ export default async function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-zinc-50">
-      <main className="mx-auto max-w-3xl px-4 py-10 sm:px-6 lg:px-8">
+      <main className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
         <header className="mb-8">
           <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">
             UCOrm Dashboard
           </h1>
           <p className="mt-1 text-sm text-zinc-500">
-            Nhập Google Place ID để fetch review · AI sinh 3 reply · Duyệt 1 trong 3
+            Test mode (sample) hoặc Real mode (Google Places) · AI sinh 3 reply · Duyệt 1 trong 3
           </p>
         </header>
 
-        <section className="mb-8 rounded-lg border border-zinc-200 bg-white p-4 shadow-sm">
-          <h2 className="mb-3 text-sm font-medium text-zinc-700">
-            Fetch reviews từ Google Maps
-          </h2>
-          <PlaceIdForm />
+        <section className="mb-8 grid gap-4 md:grid-cols-2">
+          <div className="rounded-lg border border-amber-200 bg-white p-4 shadow-sm">
+            <div className="mb-3 flex items-center gap-2">
+              <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">
+                TEST
+              </span>
+              <h2 className="text-sm font-medium text-zinc-700">Sample data</h2>
+            </div>
+            <SampleFetchPanel />
+          </div>
+
+          <div className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm">
+            <div className="mb-3 flex items-center gap-2">
+              <span className="rounded-full bg-sky-100 px-2 py-0.5 text-xs font-medium text-sky-800">
+                REAL
+              </span>
+              <h2 className="text-sm font-medium text-zinc-700">Google Places API</h2>
+            </div>
+            <PlaceIdForm />
+          </div>
         </section>
 
         <section>
@@ -57,7 +73,7 @@ export default async function DashboardPage() {
             </div>
           ) : reviews.length === 0 ? (
             <div className="rounded-md border border-dashed border-zinc-300 bg-white p-8 text-center text-sm text-zinc-500">
-              Chưa có review nào. Fetch một Place ID ở trên để bắt đầu.
+              Chưa có review nào. Nạp sample ở bên trái hoặc fetch real ở bên phải để bắt đầu.
             </div>
           ) : (
             <div className="space-y-3">

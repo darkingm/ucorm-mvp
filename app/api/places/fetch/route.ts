@@ -9,7 +9,11 @@ import { SAMPLE_PLACE } from '@/lib/google-places/sample';
 export const dynamic = 'force-dynamic';
 
 const bodySchema = z.object({
-  input: z.string().trim().min(10, 'Place ID hoặc URL quá ngắn'),
+  // 'sample' = dùng seed data, không gọi Google API
+  // 'real'   = resolve input → gọi Places API thật
+  // bỏ trống = fallback theo USE_SAMPLE_DATA env (giữ backward compat)
+  mode: z.enum(['sample', 'real']).optional(),
+  input: z.string().trim().min(1).optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -21,11 +25,25 @@ export async function POST(request: NextRequest) {
     return Response.json({ error: msg }, { status: 400 });
   }
 
-  // Sample mode bypass: chấp nhận bất kỳ chuỗi nào làm ID giả.
-  // Production mode: resolve URL → Place ID rồi mới gọi Places API.
+  const mode: 'sample' | 'real' =
+    parsed.mode ?? (env.useSampleData() ? 'sample' : 'real');
+
+  // Sample mode: không cần input thật, dùng ID cố định để re-fetch là upsert chứ không sinh thêm row places.
+  // Real mode: bắt buộc input và phải ≥10 ký tự (Place ID ngắn nhất ~27 ký tự, URL còn dài hơn).
   let placeId: string;
   try {
-    placeId = env.useSampleData() ? parsed.input : await resolvePlaceId(parsed.input);
+    if (mode === 'sample') {
+      placeId = parsed.input?.trim() || SAMPLE_PLACE.id;
+    } else {
+      const input = parsed.input?.trim();
+      if (!input || input.length < 10) {
+        return Response.json(
+          { error: 'Real mode cần Place ID hoặc URL Google Maps (tối thiểu 10 ký tự)' },
+          { status: 400 },
+        );
+      }
+      placeId = await resolvePlaceId(input);
+    }
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'Không resolve được input';
     return Response.json({ error: msg }, { status: 400 });
@@ -33,9 +51,10 @@ export async function POST(request: NextRequest) {
 
   let google: GooglePlace;
   try {
-    google = env.useSampleData()
-      ? { ...SAMPLE_PLACE, id: placeId }
-      : await fetchPlaceWithReviews(placeId);
+    google =
+      mode === 'sample'
+        ? { ...SAMPLE_PLACE, id: placeId }
+        : await fetchPlaceWithReviews(placeId);
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'Unknown upstream error';
     return Response.json({ error: msg }, { status: 502 });
@@ -83,6 +102,7 @@ export async function POST(request: NextRequest) {
   }
 
   return Response.json({
+    mode,
     place,
     resolvedPlaceId: placeId,
     reviewsCount: incoming.length,

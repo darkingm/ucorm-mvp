@@ -21,7 +21,7 @@ export function PlaceIdForm() {
       const res = await fetch('/api/places/fetch', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ input: input.trim() }),
+        body: JSON.stringify({ mode: 'real', input: input.trim() }),
       });
       const data = (await res.json().catch(() => ({}))) as {
         error?: string;

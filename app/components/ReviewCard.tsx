@@ -25,6 +25,20 @@ function StatusBadge({ status }: { status: 'pending' | 'resolved' }) {
   );
 }
 
+// Sample reviews trong [lib/google-places/sample.ts] có google_review_id
+// dạng `places/sample/reviews/rev_NNN` — đủ phân biệt với review thật.
+function SourceBadge({ googleReviewId }: { googleReviewId: string | null }) {
+  const isSample = googleReviewId?.startsWith('places/sample/') ?? false;
+  const styles = isSample
+    ? 'bg-amber-100 text-amber-800'
+    : 'bg-sky-100 text-sky-800';
+  return (
+    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${styles}`}>
+      {isSample ? 'TEST' : 'REAL'}
+    </span>
+  );
+}
+
 function formatDate(value: string | null) {
   if (!value) return '';
   try {
@@ -50,6 +64,7 @@ export function ReviewCard({ review }: { review: ReviewWithPlace }) {
         </div>
         <div className="flex items-center gap-2 text-xs text-zinc-500">
           <span>{formatDate(review.review_time)}</span>
+          <SourceBadge googleReviewId={review.google_review_id} />
           <StatusBadge status={review.status} />
         </div>
       </header>
