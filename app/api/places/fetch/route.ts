@@ -3,12 +3,13 @@ import { z } from 'zod';
 import { env } from '@/lib/env';
 import { getServerSupabase } from '@/lib/supabase/server';
 import { fetchPlaceWithReviews, type GooglePlace } from '@/lib/google-places';
+import { resolvePlaceId } from '@/lib/google-places/resolve';
 import { SAMPLE_PLACE } from '@/lib/google-places/sample';
 
 export const dynamic = 'force-dynamic';
 
 const bodySchema = z.object({
-  placeId: z.string().trim().min(10, 'Place ID quá ngắn'),
+  input: z.string().trim().min(10, 'Place ID hoặc URL quá ngắn'),
 });
 
 export async function POST(request: NextRequest) {
@@ -20,11 +21,21 @@ export async function POST(request: NextRequest) {
     return Response.json({ error: msg }, { status: 400 });
   }
 
+  // Sample mode bypass: chấp nhận bất kỳ chuỗi nào làm ID giả.
+  // Production mode: resolve URL → Place ID rồi mới gọi Places API.
+  let placeId: string;
+  try {
+    placeId = env.useSampleData() ? parsed.input : await resolvePlaceId(parsed.input);
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : 'Không resolve được input';
+    return Response.json({ error: msg }, { status: 400 });
+  }
+
   let google: GooglePlace;
   try {
     google = env.useSampleData()
-      ? { ...SAMPLE_PLACE, id: parsed.placeId }
-      : await fetchPlaceWithReviews(parsed.placeId);
+      ? { ...SAMPLE_PLACE, id: placeId }
+      : await fetchPlaceWithReviews(placeId);
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'Unknown upstream error';
     return Response.json({ error: msg }, { status: 502 });
@@ -73,6 +84,7 @@ export async function POST(request: NextRequest) {
 
   return Response.json({
     place,
+    resolvedPlaceId: placeId,
     reviewsCount: incoming.length,
     inserted,
   });

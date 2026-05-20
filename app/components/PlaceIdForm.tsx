@@ -7,7 +7,7 @@ const SAMPLE_PLACE_ID = 'ChIJN1t_tDeuEmsRUsoyG83frY4';
 
 export function PlaceIdForm() {
   const router = useRouter();
-  const [placeId, setPlaceId] = useState('');
+  const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -21,21 +21,23 @@ export function PlaceIdForm() {
       const res = await fetch('/api/places/fetch', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ placeId: placeId.trim() }),
+        body: JSON.stringify({ input: input.trim() }),
       });
       const data = (await res.json().catch(() => ({}))) as {
         error?: string;
         reviewsCount?: number;
         inserted?: number;
+        resolvedPlaceId?: string;
       };
       if (!res.ok) {
         setError(data.error ?? `HTTP ${res.status}`);
         return;
       }
+      const idHint = data.resolvedPlaceId ? ` · ${data.resolvedPlaceId}` : '';
       setSuccess(
-        `Đã fetch ${data.reviewsCount ?? 0} review (${data.inserted ?? 0} mới).`,
+        `Đã fetch ${data.reviewsCount ?? 0} review (${data.inserted ?? 0} mới)${idHint}`,
       );
-      setPlaceId('');
+      setInput('');
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Network error');
@@ -49,9 +51,9 @@ export function PlaceIdForm() {
       <div className="flex gap-2">
         <input
           type="text"
-          value={placeId}
-          onChange={(e) => setPlaceId(e.target.value)}
-          placeholder="Google Place ID (vd: ChIJ...)"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Dán Place ID (ChIJ...) hoặc link Google Maps (maps.app.goo.gl/...)"
           required
           minLength={10}
           disabled={loading}
@@ -59,22 +61,21 @@ export function PlaceIdForm() {
         />
         <button
           type="submit"
-          disabled={loading || placeId.trim().length < 10}
+          disabled={loading || input.trim().length < 10}
           className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
         >
           {loading ? 'Đang fetch…' : 'Fetch'}
         </button>
       </div>
       <p className="text-xs text-zinc-500">
-        Thử với sample:{' '}
+        Hỗ trợ: Place ID, link <code>maps.app.goo.gl/…</code>, <code>goo.gl/maps/…</code>, hoặc URL Google Maps đầy đủ. Thử sample:{' '}
         <button
           type="button"
-          onClick={() => setPlaceId(SAMPLE_PLACE_ID)}
+          onClick={() => setInput(SAMPLE_PLACE_ID)}
           className="font-mono text-zinc-700 underline-offset-2 hover:underline"
         >
           {SAMPLE_PLACE_ID}
         </button>
-        {' '}(set <code>USE_SAMPLE_DATA=true</code> trong <code>.env.local</code> để bypass Google API)
       </p>
       {error ? (
         <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
