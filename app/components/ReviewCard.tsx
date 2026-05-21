@@ -25,16 +25,23 @@ function StatusBadge({ status }: { status: 'pending' | 'resolved' }) {
   );
 }
 
-// Sample reviews trong [lib/google-places/sample.ts] có google_review_id
-// dạng `places/sample/reviews/rev_NNN` — đủ phân biệt với review thật.
+// Detect nguồn review qua prefix của google_review_id:
+//   - "places/sample/..."  → seed data         (TEST, amber)
+//   - "manual/..."         → paste thủ công    (MANUAL, violet)
+//   - khác / null          → Google Places API (REAL, sky)
 function SourceBadge({ googleReviewId }: { googleReviewId: string | null }) {
-  const isSample = googleReviewId?.startsWith('places/sample/') ?? false;
-  const styles = isSample
-    ? 'bg-amber-100 text-amber-800'
-    : 'bg-sky-100 text-sky-800';
+  let label: 'TEST' | 'REAL' | 'MANUAL' = 'REAL';
+  let styles = 'bg-sky-100 text-sky-800';
+  if (googleReviewId?.startsWith('places/sample/')) {
+    label = 'TEST';
+    styles = 'bg-amber-100 text-amber-800';
+  } else if (googleReviewId?.startsWith('manual/')) {
+    label = 'MANUAL';
+    styles = 'bg-violet-100 text-violet-800';
+  }
   return (
     <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${styles}`}>
-      {isSample ? 'TEST' : 'REAL'}
+      {label}
     </span>
   );
 }
