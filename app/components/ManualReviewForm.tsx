@@ -101,10 +101,30 @@ export function ManualReviewForm() {
         rows={4}
         className="w-full rounded-md border border-zinc-300 bg-white px-2 py-1.5 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-900 focus:outline-none disabled:opacity-50"
       />
+      {(() => {
+        const len = comment.trim().length;
+        const needsMore = Math.max(0, 10 - len);
+        return (
+          <p
+            className={`text-xs ${
+              len === 0
+                ? 'text-zinc-400'
+                : needsMore > 0
+                  ? 'text-amber-700'
+                  : 'text-emerald-700'
+            }`}
+          >
+            {len}/4000 ký tự
+            {needsMore > 0
+              ? ` — cần thêm ${needsMore} ký tự để bật nút Thêm`
+              : ' — đã đủ, có thể bấm Thêm review'}
+          </p>
+        );
+      })()}
       <button
         type="submit"
         disabled={loading || comment.trim().length < 10}
-        className="w-full rounded-md border border-violet-300 bg-violet-50 px-4 py-2 text-sm font-medium text-violet-900 hover:bg-violet-100 disabled:opacity-50"
+        className="w-full rounded-md border border-violet-300 bg-violet-50 px-4 py-2 text-sm font-medium text-violet-900 hover:bg-violet-100 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {loading ? 'Đang thêm…' : 'Thêm review'}
       </button>
