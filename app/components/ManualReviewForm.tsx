@@ -34,12 +34,20 @@ export function ManualReviewForm() {
         setError(data.error ?? `HTTP ${res.status}`);
         return;
       }
-      setSuccess('Đã thêm review. Bấm Generate AI bên dưới để xử lý.');
+      setSuccess('Đã thêm review — đang cuộn xuống review mới…');
       setAuthor('');
       setComment('');
       setSource('');
       setRating(5);
       router.refresh();
+      // Đợi 1 tick cho router.refresh() bắt đầu re-fetch RSC payload,
+      // rồi smooth scroll xuống section list — vì review mới hiện ra bên dưới
+      // panel, user không thấy nếu đang focus ở form.
+      requestAnimationFrame(() => {
+        document
+          .getElementById('reviews-section')
+          ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Network error');
     } finally {

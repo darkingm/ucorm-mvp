@@ -63,7 +63,7 @@ export default async function DashboardPage() {
           </div>
         </section>
 
-        <section>
+        <section id="reviews-section" className="scroll-mt-4">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-sm font-medium text-zinc-700">
               Tất cả review ({reviews.length})
