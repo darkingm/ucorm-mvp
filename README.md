@@ -1,5 +1,9 @@
 # UCOrm — AI-Powered Online Reputation Management
 
+Em xin gửi kết quả bài test cho UCTalent Labs. Hệ thống của em có nhờ sự hỗ trợ của Claude (Anthropic) trong quá trình code — chủ yếu cho phần boilerplate, refactor, và soạn documentation. Toàn bộ quyết định về kiến trúc, lựa chọn tech stack, các trade-off và prompt design đều do em chủ động đưa ra dựa trên việc đọc kỹ PRD. Phần dưới đây mô tả chi tiết hệ thống em đã xây và lý do em chọn các giải pháp đó.
+
+---
+
 MVP 0 (Proof of Concept) thực hiện trong 7 ngày cho UCTalent Labs. Nền tảng giúp khách sạn / F&B quản trị review Google Maps bằng AI: tự fetch review, AI sinh 3 phương án trả lời theo 3 tone khác nhau, người dùng đọc và Approve trên một dashboard duy nhất. Không đẩy reply ngược lên Google Maps (đúng acceptance criteria của UI-02).
 
 Live demo: _(sẽ cập nhật sau khi deploy Vercel)_
